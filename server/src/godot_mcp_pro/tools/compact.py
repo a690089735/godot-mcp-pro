@@ -1,4 +1,4 @@
-"""Compact mode: all 175 tools merged into ~21 domain tools + batch_execute.
+"""Compact mode: all 178 tools merged into ~22 domain tools + batch_execute = 23 tools.
 
 Activated via --compact CLI argument. Each tool dispatches to GDScript commands
 based on the 'action' parameter.
@@ -45,9 +45,9 @@ def register(mcp: FastMCP, bridge: GodotBridge):
         - info: Get project metadata (no params)
         - tree: Get filesystem tree (path:str="res://", filter:str="" [filename glob, e.g. "*.gd"], max_depth:int=10)
         - search: Fuzzy/glob file search (query:str, path:str="res://", file_type:str="" [bare extension, e.g. "gd"], max_results:int=50)
-        - search_content: Search inside files (query:str, path:str="res://", max_results:int=50, regex:bool=false, file_type:str="" [bare extension, e.g. "gd"])
+        - search_content: Search inside files (query:str, path:str="res://", max_results:int=50, regex:bool=false, file_type:str="" [bare extension, e.g. "gd"], include_addons:bool=false)
         - get_settings: Read project settings (section:str="", key:str="")
-        - set_setting: Set a project setting (key:str, value:any)
+        - set_setting: Set a project setting (key:str, value:any, type:str="" [for new keys: "string","int","float","bool","vector2","packed_string_array",etc.])
         - uid_to_path: Convert UID to path (uid:str)
         - path_to_uid: Convert path to UID (path:str)
         """
@@ -74,7 +74,7 @@ def register(mcp: FastMCP, bridge: GodotBridge):
         Actions:
         - tree: Get live scene tree, scene-relative paths with root="." (max_depth:int=-1)
         - file_content: Get raw .tscn content (path:str)
-        - create: Create new scene (path:str, root_type:str="Node2D", root_name:str="")
+        - create: Create new scene (path:str, root_type:str="Node2D", root_name:str="", force:bool=false)
         - open: Open scene in editor (path:str)
         - delete: Delete scene file (path:str)
         - instance: Instance scene as child (scene_path:str, parent_path:str=".", name:str="")
@@ -724,7 +724,29 @@ def register(mcp: FastMCP, bridge: GodotBridge):
         return await bridge.call_godot(method, _clean_params(params))
 
     # =========================================================================
-    # 22. BATCH_EXECUTE — execute multiple commands sequentially
+    # 22. HEADLESS — run scenes/scripts in a separate headless Godot process
+    # =========================================================================
+    @mcp.tool()
+    async def headless(action: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Headless execution — run scenes or scripts in a background Godot process.
+
+        Actions:
+        - run_scene: Run a scene headless (scene_path:str, timeout_sec:float=120, quit_after_frames:int=-1, args:list=[])
+        - run_script: Run an extends-SceneTree script headless (script_path:str, timeout_sec:float=120, quit_after_frames:int=-1, args:list=[])
+        - executable: Get the Godot executable path and project dir (no params)
+        """
+        ACTION_MAP = {
+            "run_scene": "run_headless_scene",
+            "run_script": "run_headless_script",
+            "executable": "get_godot_executable",
+        }
+        method = _dispatch(action, ACTION_MAP, "headless")
+        p = _clean_params(params)
+        timeout = float(p.get("timeout_sec", 120)) + 30.0
+        return await bridge.call_godot(method, p, timeout=min(timeout, 960.0))
+
+    # =========================================================================
+    # 23. BATCH_EXECUTE — execute multiple commands sequentially
     # =========================================================================
     @mcp.tool()
     async def batch_execute(

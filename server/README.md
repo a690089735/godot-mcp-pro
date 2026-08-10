@@ -69,13 +69,13 @@ Or if installed as a package:
 
 ### 3. Use It
 
-The server will start a WebSocket server on port 6505 and wait for the Godot editor plugin to connect. Once connected, all 175 MCP tools become available to your AI assistant.
+The server will start a WebSocket server on port 6505 and wait for the Godot editor plugin to connect. Once connected, all 178 MCP tools become available to your AI assistant.
 
 ### 4. Optional: Compact Mode
 
-Pass `--compact` to expose **22 umbrella tools** instead of 175 individual ones. Each
+Pass `--compact` to expose **23 umbrella tools** instead of 178 individual ones. Each
 umbrella tool takes an `action` string plus a `params` dict, and internally reaches the
-exact same 174 Godot commands.
+exact same 177 Godot commands.
 
 ```json
 {
@@ -96,10 +96,10 @@ Use it when:
 Trade-off: the AI can only discover parameters from the umbrella tool docstrings, so it
 is slightly less reliable at guessing argument names than full mode.
 
-The 22 umbrella tools are: `project`, `scene`, `node`, `script`, `editor`, `input`,
+The 23 umbrella tools are: `project`, `scene`, `node`, `script`, `editor`, `input`,
 `runtime`, `animation`, `tilemap`, `ui`, `physics`, `scene_3d`, `particles`,
 `navigation`, `audio`, `shader`, `resource`, `batch`, `test`, `export`, `diagnostics`,
-and `batch_execute`.
+`headless`, and `batch_execute`.
 
 ## Environment Variables
 
@@ -107,12 +107,14 @@ and `batch_execute`.
 |----------|---------|-------------|
 | `GODOT_MCP_PORT` | `6505` | WebSocket port for Godot to connect to |
 | `GODOT_MCP_LOG_LEVEL` | `INFO` | Logging level (DEBUG, INFO, WARNING, ERROR) |
+| `GODOT_MCP_TOKEN` | *(empty)* | Connection token (if Godot requires one; see `SECURITY.md`) |
+| `GODOT_MCP_TOKEN_FILE` | *(empty)* | Path to file containing the connection token |
 
 ## CLI Flags
 
 | Flag | Description |
 |------|-------------|
-| `--compact` | Register 22 umbrella tools instead of 175 individual tools |
+| `--compact` | Register 23 umbrella tools instead of 178 individual tools |
 
 ## How It Works
 
@@ -124,7 +126,7 @@ and `batch_execute`.
    - Waits for the response
    - Returns the result to the AI
 
-## Tool Categories (175 tools total)
+## Tool Categories (178 tools total)
 
 | Category | Count | Description |
 |----------|-------|-------------|
@@ -152,9 +154,10 @@ and `batch_execute`.
 | Testing | 6 | Automated scenarios, assertions, stress tests |
 | Android | 3 | Device management, presets, deployment |
 | Analysis | 4 | Scene complexity, signal flow, unused resources, statistics |
+| Headless | 3 | Run scenes/scripts in a headless Godot process, get executable path |
 
-> The 175 tools map onto 174 distinct Godot plugin commands (one command is exposed by
-> two tools). Compact mode reaches the same 174 commands through 22 umbrella tools.
+> The 178 tools map onto 177 distinct Godot plugin commands (one command is exposed by
+> two tools). Compact mode reaches the same 177 commands through 23 umbrella tools.
 
 ## Troubleshooting
 

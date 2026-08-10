@@ -11,13 +11,18 @@ from ..bridge import GodotBridge
 
 def register(mcp: FastMCP, bridge: GodotBridge):
     @mcp.tool()
-    async def read_resource(path: str) -> dict[str, Any]:
+    async def read_resource(path: str, force: bool = False) -> dict[str, Any]:
         """Read a .tres resource file and get its properties.
 
         Args:
             path: Path to the resource file (e.g. "res://resources/config.tres")
+            force: Allow reading even if the resource is open in the script
+                editor (default False; the guard prevents accidental overwrites)
         """
-        return await bridge.call_godot("read_resource", {"path": path})
+        return await bridge.call_godot("read_resource", {
+            "path": path,
+            "force": force,
+        })
 
     @mcp.tool()
     async def edit_resource(

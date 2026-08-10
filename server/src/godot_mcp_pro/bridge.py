@@ -8,6 +8,7 @@ Communication uses JSON-RPC 2.0 protocol.
 import asyncio
 import json
 import logging
+import os
 from typing import Any
 
 import websockets
@@ -269,6 +270,21 @@ class GodotBridge:
                 )
             return
 
+        # Handle auth_required from Godot (opt-in connection token)
+        if msg.get("method") == "auth_required":
+            token = self._read_auth_token()
+            if token and self._connection:
+                await self._connection.send(
+                    json.dumps({"jsonrpc": "2.0", "method": "auth", "params": {"token": token}})
+                )
+                logger.info("Responded to auth_required with connection token")
+            else:
+                logger.warning(
+                    "Godot requires a connection token but none is configured. "
+                    "Set GODOT_MCP_TOKEN or GODOT_MCP_TOKEN_FILE environment variable."
+                )
+            return
+
         # Handle JSON-RPC response (has "id" field)
         msg_id = msg.get("id")
         if msg_id is not None and msg_id in self._pending_requests:
@@ -287,3 +303,26 @@ class GodotBridge:
                 future.set_exception(RuntimeError(full_msg))
             else:
                 future.set_result(msg.get("result", {}))
+
+    def _read_auth_token(self) -> str:
+        """Read the connection token from environment or file.
+
+        Checks GODOT_MCP_TOKEN first (inline token), then GODOT_MCP_TOKEN_FILE
+        (path to a file containing the token). Returns empty string if neither
+        is available.
+        """
+        # Direct token in environment
+        token = os.environ.get("GODOT_MCP_TOKEN", "").strip()
+        if token:
+            return token
+
+        # Token file path
+        token_file = os.environ.get("GODOT_MCP_TOKEN_FILE", "").strip()
+        if token_file and os.path.isfile(token_file):
+            try:
+                with open(token_file, "r", encoding="utf-8") as f:
+                    return f.read().strip()
+            except OSError as e:
+                logger.warning(f"Could not read token file {token_file}: {e}")
+
+        return ""

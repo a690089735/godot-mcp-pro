@@ -87,6 +87,7 @@ def register(mcp: FastMCP, bridge: GodotBridge):
         max_results: int = 50,
         regex: bool = False,
         file_type: str = "",
+        include_addons: bool = False,
     ) -> dict[str, Any]:
         """Search content inside project files.
 
@@ -96,6 +97,7 @@ def register(mcp: FastMCP, bridge: GodotBridge):
             max_results: Maximum number of results (default 50)
             regex: Whether to treat query as regex (default False)
             file_type: Extension filter, e.g. "gd" (".gd" and "*.gd" also work)
+            include_addons: Whether to also search in res://addons (default False)
         """
         return await bridge.call_godot("search_in_files", {
             "query": query,
@@ -103,6 +105,7 @@ def register(mcp: FastMCP, bridge: GodotBridge):
             "max_results": max_results,
             "regex": regex,
             "file_type": _bare_extension(file_type),
+            "include_addons": include_addons,
         })
 
     @mcp.tool()
@@ -122,17 +125,23 @@ def register(mcp: FastMCP, bridge: GodotBridge):
         })
 
     @mcp.tool()
-    async def set_project_setting(key: str, value: Any) -> dict[str, Any]:
+    async def set_project_setting(key: str, value: Any, type: str = "") -> dict[str, Any]:
         """Set a project setting via editor API.
+
+        Existing keys preserve their declared type by default. For new keys, pass
+        `type` to declare the Godot type explicitly.
 
         Args:
             key: Setting key path (e.g. "application/config/name")
             value: Value to set
+            type: Godot type name for new keys (e.g. "string", "int", "float",
+                "bool", "vector2", "packed_string_array", etc.). Existing keys
+                ignore this and keep their declared type.
         """
-        return await bridge.call_godot("set_project_setting", {
-            "key": key,
-            "value": value,
-        })
+        params: dict[str, Any] = {"key": key, "value": value}
+        if type:
+            params["type"] = type
+        return await bridge.call_godot("set_project_setting", params)
 
     @mcp.tool()
     async def uid_to_project_path(uid: str) -> dict[str, Any]:

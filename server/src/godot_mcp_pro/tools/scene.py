@@ -33,6 +33,7 @@ def register(mcp: FastMCP, bridge: GodotBridge):
         path: str,
         root_type: str = "Node2D",
         root_name: str = "",
+        force: bool = False,
     ) -> dict[str, Any]:
         """Create a new scene file.
 
@@ -40,11 +41,13 @@ def register(mcp: FastMCP, bridge: GodotBridge):
             path: Where to save the scene (e.g. "res://scenes/player.tscn")
             root_type: Type of root node (default "Node2D")
             root_name: Name for the root node (defaults to filename)
+            force: Overwrite if the scene already exists (default False)
         """
         return await bridge.call_godot("create_scene", {
             "path": path,
             "root_type": root_type,
             "root_name": root_name,
+            "force": force,
         })
 
     @mcp.tool()

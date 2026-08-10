@@ -50,15 +50,15 @@ async def lifespan(app):
 # Create FastMCP server
 _instructions_full = (
     "Godot MCP Pro - AI-powered Godot game development server. "
-    "Provides 175 tools for scene management, node manipulation, scripting, "
-    "animation, physics, audio, and more. "
+    "Provides 178 tools for scene management, node manipulation, scripting, "
+    "animation, physics, audio, headless execution, and more. "
     "Requires Godot editor to be running with the MCP plugin enabled."
 )
 _instructions_compact = (
     "Godot MCP Pro (compact mode) - AI-powered Godot game development server. "
-    "Provides 22 domain tools (project, scene, node, script, editor, input, "
+    "Provides 23 domain tools (project, scene, node, script, editor, input, "
     "runtime, animation, tilemap, ui, physics, scene_3d, particles, navigation, "
-    "audio, shader, resource, batch, test, export, diagnostics) + batch_execute. "
+    "audio, shader, resource, batch, test, export, diagnostics, headless) + batch_execute. "
     "Each tool takes an 'action' string and a 'params' dict. "
     "Requires Godot editor to be running with the MCP plugin enabled."
 )
@@ -75,7 +75,7 @@ def _register_all_tools():
     if COMPACT_MODE:
         from .tools import compact
         compact.register(mcp, bridge)
-        logger.info("Compact mode: registered 22 tools")
+        logger.info("Compact mode: registered 23 tools")
     else:
         from .tools import (
             analysis,
@@ -85,6 +85,7 @@ def _register_all_tools():
             batch,
             editor,
             export,
+            headless,
             input_tools,
             navigation,
             node,
@@ -127,7 +128,8 @@ def _register_all_tools():
         test.register(mcp, bridge)
         android.register(mcp, bridge)
         analysis.register(mcp, bridge)
-        logger.info("Full mode: registered 175 tools")
+        headless.register(mcp, bridge)
+        logger.info("Full mode: registered 178 tools")
 
 
 # Register tools at import time
