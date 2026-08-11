@@ -1,19 +1,47 @@
 # 当前活跃上下文
 
 ## 当前工作焦点
-已同步上游 v1.15.1，完成 **Python 移植层参数级对齐大修**，并完成
-**174 工具全量实机逐一测试**（详见 `memory-bank/tool-live-test.md`）。稳定维护阶段。
+已同步上游 **v1.16.0**（headless 执行 + 可选连接 token + SECURITY.md），完成
+Python 移植层参数级对齐大修与 174 工具全量实机测试（详见
+`memory-bank/tool-live-test.md`）。稳定维护阶段。
 
 ## 仓库当前状态
-- **上游版本**：v1.15.1（外部完整工具集审计的 15 个修复）
-- **参数对齐**：DEAD=0 / MISSING=0（由 `server/tests/` 守卫，盲区已从 55 降到 15）
-- **实机验证**：174 个工具全部逐一调用过，写入类工具均回读校验
+- **上游版本**：v1.16.0（headless 执行 + 可选连接 token + SECURITY.md）
+- **参数对齐**：DEAD=0 / MISSING=0（由 `server/tests/` 守卫）
+- **实机验证**：174 个工具全部逐一调用过，写入类工具均回读校验；
+  v1.16.0 新增的 3 个 headless 工具与 token 流程**尚未实机验证**
 - **Python server 版本**：1.0.0（`pyproject.toml`）
 - **工具总数**：
-  - 完整模式（默认）：175 工具（174 GDScript 命令 + 1 纯 Python `batch_execute`）
-  - 紧凑模式（--compact）：22 工具（21 领域工具 + 1 `batch_execute`）
+  - 完整模式（默认）：178 工具（177 GDScript 命令 + 1 纯 Python `batch_execute`）
+  - 紧凑模式（--compact）：23 工具（22 领域工具 + 1 `batch_execute`）
 
 ## 近期完成的工作
+
+### 第十三阶段：v1.16.0 上游合并 + Python 适配（2026-08-11）
+
+**起因**：用户要求「落后上游的提交是什么，合并的话 server 有哪些需要改的」，随后执行合并。
+
+**上游 v1.16.0 内容**（`4d5f491`，44 commits，+2003/-261）：
+1. **新增 3 个 headless 命令**：`run_headless_scene` / `run_headless_script` / `get_godot_executable`（`headless_commands.gd`，356 行）
+2. **可选连接 token**：`websocket_server.gd` 握手后发 `auth_required`，5s 未认证则断开；默认关闭，opt-in
+3. `set_project_setting` 重写：保留已有 key 类型 + 新增 `type` 参数 + 拒绝 `editor_plugins/enabled`
+4. `create_scene` 新增 `force`；`delete_scene` 只删 `.tscn/.scn`；`read_resource` 新增文本资源守卫（`force`）
+5. `search_in_files` 新增 `include_addons`
+6. `validate_script` / `edit_script` 返回新增字段（`parse_errors`、`valid_after_edit` 等）
+7. ~160 处 `int()`/`float()` → `optional_int`/`optional_float`（防 raise 挂起调用方）——**纯 GDScript 端，Python 无感**
+8. `send_game_command` 互斥 + correlation id；autoload 回收；扩展名守卫等
+
+**Python 适配**：
+- 新增 `tools/headless.py`（3 工具）。⚠️ **参数名是 `args` 不是 `extra_args`**——审计脚本在
+  实跑时抓出了这个 DEAD/MISSING（首版写错，测试当场失败，已修正）
+- `project.py` / `scene.py` / `resource.py` 共 4 个新参数（全部可选，默认向后兼容）
+- `compact.py` 新增 headless 域（22 域工具 + batch_execute = 23）
+- `bridge.py` 支持 token：收到 `auth_required` → 读 `GODOT_MCP_TOKEN` / `GODOT_MCP_TOKEN_FILE` → 回 `auth`
+- headless 工具的 Python 侧超时 = `timeout_sec + 30`，封顶 960s（GDScript 侧上限 900s）
+
+**用户约定**：`CHANGELOG.md` 以上游为准，本 fork 不修改；`memory-bank/` 与 `.clinerules/` 必须保留。
+
+**审查结论**：方案复核后确认无副作用——所有新参数默认值与旧行为完全一致，token 为 opt-in。
 
 ### 第十二阶段：全量实机逐一测试（本次会话）
 
@@ -154,19 +182,27 @@ token 成本低、与紧凑模式契合），只改传输层。相比显式平�
    `cross_scene_set_property`（dry-run 预览 + `force` 实写）。
    证据见 `memory-bank/tool-live-test.md` 的「复测轮次」章节
 3. 未实测：`export_project` / `deploy_to_android`（测试项目无导出预设、无 ADB）
-4. 可选：实现 HTTP transport（`--http` 模式）
-5. 可选：更新 `server/README.md`（仍写 172 工具、未提及 `--compact`）
+4. **待实机验证 v1.16.0 新增**：
+   - `run_headless_scene` / `run_headless_script` / `get_godot_executable`（需测试项目 + 真实场景/脚本）
+   - token 认证流程（需开启 `godot_mcp_pro/require_connection_token` 项目设置 + `GODOT_MCP_TOKEN` 环境变量）
+5. 可选：实现 HTTP transport（`--http` 模式）
+6. ✅ `server/README.md` 已更新（178 工具 / 23 伞工具 / 177 命令 / token 环境变量）
 
 ## 重要决策记录
 - Python server 作为 WS **Server**（监听端），Godot 作为 WS **Client**（连接端）
 - `--compact` 模式通过命令行参数启用，不使用环境变量
 - 紧凑模式纯 Python 层面实现（`compact.py` 是分发器），零 GDScript 改动
 - 紧凑模式使用 `action:str` + `params:dict` 统一签名，docstring 列出所有可用 action 及参数类型
-- 工具总数 175（完整模式）/ 22（紧凑模式），与 upstream README 一致
+- 工具总数 178（完整模式）/ 23（紧凑模式），与 upstream README 一致
 - `GODOT_MCP_PORT` 仅决定起始端口偏好，始终启用端口重试（6505-6514）
 - **不修改 `addons/` 下任何文件**，保持与 upstream 完全一致以确保后续合并永远零冲突；上游的技术债只记录不修
 - **`properties` 字典采用传输层平铺**，不改工具签名（见第十一阶段方案决策）
 - **每次合并 upstream 必须跑 `server/tests/`** —— 参数腐化是静默的，只有静态审计能发现
+- **`CHANGELOG.md` 以上游为准**（用户约定），本 fork 不维护该文件
+- **token 认证（v1.16.0）为 opt-in**：Godot 端需开启 `godot_mcp_pro/require_connection_token`；
+  Python 端需配 `GODOT_MCP_TOKEN` 或 `GODOT_MCP_TOKEN_FILE`。默认关闭，不配 token 也不影响现有连接
+- **headless 工具超时约定**：GDScript 侧上限 900s；Python 侧 = `timeout_sec + 30` 封顶 960s，
+  避免 Python 侧提前掐断长任务
 
 ## 重要模式与偏好
 - 路径信息在文档中**一律脱敏**（使用 `<APPDATA>`、`<项目根目录>` 等占位符）

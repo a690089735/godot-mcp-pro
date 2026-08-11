@@ -10,7 +10,7 @@ python server/tools_audit.py --md memory-bank/tool-audit.md
 
 ## 汇总
 
-- commands: 174
+- commands: 177
 - py_missing_tool: 0
 - compact_missing: 0
 - required_not_sent: 0
@@ -60,7 +60,7 @@ python server/tools_audit.py --md memory-bank/tool-audit.md
 | 32 | `create_animation_tree` | animation_tree_commands.gd | node_path | anim_player, name | `create_animation_tree` | `animation.create_tree` | OK |
 | 33 | `create_particles` | particle_commands.gd | parent_path | amount, emitting, explosiveness, is_3d, lifetime, name, one_shot, randomness | `create_particles` | `particles.create` | OK |
 | 34 | `create_resource` | resource_commands.gd | path, type | overwrite, properties | `create_resource` | `resource.create` | OK |
-| 35 | `create_scene` | scene_commands.gd | path | root_name, root_type | `create_scene` | `scene.create` | OK |
+| 35 | `create_scene` | scene_commands.gd | path | force, root_name, root_type | `create_scene` | `scene.create` | OK |
 | 36 | `create_script` | script_commands.gd | path | class_name, content, extends, force | `create_script` | `script.create` | OK |
 | 37 | `create_shader` | shader_commands.gd | path | content, force, shader_type | `create_shader` | `shader.create` | OK |
 | 38 | `create_theme` | theme_commands.gd | path | default_font_size | `create_theme` | `ui.create_theme` | OK |
@@ -103,101 +103,104 @@ python server/tools_audit.py --md memory-bank/tool-audit.md
 | 75 | `get_game_node_properties` | runtime_commands.gd | node_path | properties | `get_game_node_properties` | `runtime.get_properties` | OK |
 | 76 | `get_game_scene_tree` | runtime_commands.gd | - | max_depth, named_only, script_filter, type_filter | `get_game_scene_tree` | `runtime.game_tree` | OK |
 | 77 | `get_game_screenshot` | editor_commands.gd | - | save_path | `get_game_screenshot` | `editor.game_screenshot` | OK |
-| 78 | `get_input_actions` | input_map_commands.gd | - | filter, include_builtin | `get_input_actions` | `input.get_actions` | OK |
-| 79 | `get_navigation_info` | navigation_commands.gd | node_path | - | `get_navigation_info` | `navigation.info` | OK |
-| 80 | `get_node_groups` | node_commands.gd | node_path | - | `get_node_groups` | `node.get_groups` | OK |
-| 81 | `get_node_properties` | node_commands.gd | node_path | category | `get_node_properties` | `node.get_properties` | OK |
-| 82 | `get_open_scripts` | script_commands.gd | - | - | `get_open_scripts` | `script.open_scripts` | OK |
-| 83 | `get_output_log` | editor_commands.gd | - | filter, max_lines | `get_output_log` | `editor.output_log` | OK |
-| 84 | `get_particle_info` | particle_commands.gd | node_path | - | `get_particle_info` | `particles.info` | OK |
-| 85 | `get_performance_monitors` | profiling_commands.gd | - | category | `get_performance_monitors` | `diagnostics.performance` | OK |
-| 86 | `get_physics_layers` | physics_commands.gd | node_path | - | `get_physics_layers` | `physics.get_layers` | OK |
-| 87 | `get_project_info` | project_commands.gd | - | - | `get_project_info` | `project.info` | OK |
-| 88 | `get_project_settings` | project_commands.gd | - | key, section | `get_project_settings` | `project.get_settings` | OK |
-| 89 | `get_project_statistics` | analysis_commands.gd | - | include_addons, path | `get_project_statistics` | `diagnostics.statistics` | OK |
-| 90 | `get_resource_preview` | resource_commands.gd | path | max_size | `get_resource_preview` | `resource.preview` | OK |
-| 91 | `get_scene_dependencies` | batch_commands.gd | path | - | `get_scene_dependencies` | `batch.dependencies` | OK |
-| 92 | `get_scene_exports` | scene_commands.gd | path | - | `get_scene_exports` | `scene.exports` | OK |
-| 93 | `get_scene_file_content` | scene_commands.gd | path | - | `get_scene_file_content` | `scene.file_content` | OK |
-| 94 | `get_scene_tree` | scene_commands.gd | - | max_depth | `get_scene_tree` | `scene.tree` | OK |
-| 95 | `get_shader_params` | shader_commands.gd | node_path | - | `get_shader_params` | `shader.get_params` | OK |
-| 96 | `get_signals` | editor_commands.gd | node_path | - | `get_signals` | `editor.get_signals` | OK |
-| 97 | `get_test_report` | test_commands.gd | - | clear | `get_test_report` | `test.report` | OK |
-| 98 | `get_theme_info` | theme_commands.gd | node_path | - | `get_theme_info` | `ui.theme_info` | OK |
-| 99 | `list_android_devices` | android_commands.gd | - | - | `list_android_devices` | `export.list_android` | OK |
-| 100 | `list_animations` | animation_commands.gd | node_path | - | `list_animations` | `animation.list` | OK |
-| 101 | `list_export_presets` | export_commands.gd | - | - | `list_export_presets` | `export.list_presets` | OK |
-| 102 | `list_scripts` | script_commands.gd | - | path, recursive | `list_scripts` | `script.list` | OK |
-| 103 | `monitor_properties` | runtime_commands.gd | node_path | frame_count, frame_interval, properties | `monitor_properties` | `runtime.monitor` | OK |
-| 104 | `move_node` | node_commands.gd | new_parent_path, node_path | - | `move_node` | `node.move` | OK |
-| 105 | `move_to` | runtime_commands.gd | - | arrival_radius, camera_path, look_at_target, player_path, run, target, timeout | `move_to` | `runtime.move_to` | OK |
-| 106 | `navigate_to` | runtime_commands.gd | - | camera_path, move_speed, player_path, target | `navigate_to` | `runtime.navigate_to` | OK |
-| 107 | `open_scene` | scene_commands.gd | path | - | `open_scene` | `scene.open` | OK |
-| 108 | `play_scene` | scene_commands.gd | - | mode | `play_scene` | `scene.play` | OK |
-| 109 | `project_path_to_uid` | project_commands.gd | path | - | `project_path_to_uid` | `project.path_to_uid` | OK |
-| 110 | `read_resource` | resource_commands.gd | path | - | `read_resource` | `resource.read` | OK |
-| 111 | `read_script` | script_commands.gd | path | - | `read_script` | `script.read` | OK |
-| 112 | `read_shader` | shader_commands.gd | path | - | `read_shader` | `shader.read` | OK |
-| 113 | `reload_plugin` | editor_commands.gd | - | - | `reload_plugin` | `editor.reload_plugin` | OK |
-| 114 | `reload_project` | editor_commands.gd | - | - | `reload_project` | `editor.reload_project` | OK |
-| 115 | `remove_animation` | animation_commands.gd | name, node_path | - | `remove_animation` | `animation.remove` | OK |
-| 116 | `remove_autoload` | project_commands.gd | name | - | `remove_autoload` | `resource.remove_autoload` | OK |
-| 117 | `remove_state_machine_state` | animation_tree_commands.gd | node_path, state_name | state_machine_path | `remove_state_machine_state` | `animation.remove_state` | OK |
-| 118 | `remove_state_machine_transition` | animation_tree_commands.gd | from_state, node_path, to_state | state_machine_path | `remove_state_machine_transition` | `animation.remove_transition` | OK |
-| 119 | `rename_node` | node_commands.gd | new_name, node_path | - | `rename_node` | `node.rename` | OK |
-| 120 | `replay_recording` | runtime_commands.gd | - | events, speed | `replay_recording` | `runtime.replay` | OK |
-| 121 | `run_stress_test` | test_commands.gd | - | actions, duration | `run_stress_test` | `test.stress_test` | OK |
-| 122 | `run_test_scenario` | test_commands.gd | - | scene_path, steps | `run_test_scenario` | `test.run_scenario` | OK |
-| 123 | `save_scene` | scene_commands.gd | - | path | `save_scene` | `scene.save` | OK |
-| 124 | `search_files` | project_commands.gd | query | file_type, max_results, path | `search_files` | `project.search` | OK |
-| 125 | `search_in_files` | project_commands.gd | query | file_type, max_results, path, regex | `search_in_files` | `project.search_content` | OK |
-| 126 | `select_nodes` | node_commands.gd | node_path | focus, for_property, inspect, inspector_only, mode, node_paths | `select_nodes` | `node.select` | OK |
-| 127 | `set_anchor_preset` | node_commands.gd | node_path, preset | keep_offsets | `set_anchor_preset` | `node.set_anchor` | OK |
-| 128 | `set_animation_keyframe` | animation_commands.gd | animation, node_path | easing, time, track_index, value | `set_animation_keyframe` | `animation.set_keyframe` | OK |
-| 129 | `set_audio_bus` | audio_commands.gd | name | bypass_effects, mute, rename, send, solo, volume_db | `set_audio_bus` | `audio.set_bus` | OK |
-| 130 | `set_auto_dismiss` | editor_commands.gd | - | enabled | `set_auto_dismiss` | `editor.auto_dismiss` | OK |
-| 131 | `set_blend_tree_node` | animation_tree_commands.gd | blend_tree_state, bt_node_name, bt_node_type, node_path | animation, connect_port, connect_to, position_x, position_y, state_machine_path | `set_blend_tree_node` | `animation.set_blend_node` | OK |
-| 132 | `set_editor_camera` | editor_commands.gd | - | fov, look_at, position, rotation_degrees | `set_editor_camera` | `editor.set_camera` | OK |
-| 133 | `set_game_node_property` | runtime_commands.gd | node_path, property | value | `set_game_node_property` | `runtime.set_property` | OK |
-| 134 | `set_input_action` | input_map_commands.gd | action | deadzone, events | `set_input_action` | `input.define` | OK |
-| 135 | `set_material_3d` | scene_3d_commands.gd | node_path | albedo_texture, cull_mode, emission, emission_color, emission_energy, emission_texture, metallic, metallic_texture, normal_texture, roughness, roughness_texture, surface_index, transparency | `set_material_3d` | `scene_3d.set_material` | OK |
-| 136 | `set_navigation_layers` | navigation_commands.gd | node_path | layer_bits, layer_names, layers | `set_navigation_layers` | `navigation.set_layers` | OK |
-| 137 | `set_node_groups` | node_commands.gd | node_path | groups | `set_node_groups` | `node.set_groups` | OK |
-| 138 | `set_particle_color_gradient` | particle_commands.gd | node_path | stops | `set_particle_color_gradient` | `particles.set_gradient` | OK |
-| 139 | `set_particle_material` | particle_commands.gd | node_path | angular_velocity_max, angular_velocity_min, attractor_interaction_enabled, color, damping_max, damping_min, direction, emission_box_extents, emission_ring_height, emission_ring_inner_radius, emission_ring_radius, emission_shape, emission_sphere_radius, gravity, initial_velocity_max, initial_velocity_min, orbit_velocity_max, orbit_velocity_min, scale_max, scale_min, spread | `set_particle_material` | `particles.set_material` | OK |
-| 140 | `set_physics_layers` | physics_commands.gd | node_path | collision_layer, collision_mask | `set_physics_layers` | `physics.set_layers` | OK |
-| 141 | `set_project_setting` | project_commands.gd | key | value | `set_project_setting` | `project.set_setting` | OK |
-| 142 | `set_shader_param` | shader_commands.gd | node_path, param | value | `set_shader_param` | `shader.set_param` | OK |
-| 143 | `set_theme_color` | theme_commands.gd | color, name, node_path | theme_type | `set_theme_color` | `ui.set_color` | OK |
-| 144 | `set_theme_constant` | theme_commands.gd | name, node_path | value | `set_theme_constant` | `ui.set_constant` | OK |
-| 145 | `set_theme_font_size` | theme_commands.gd | name, node_path | size | `set_theme_font_size` | `ui.set_font_size` | OK |
-| 146 | `set_theme_stylebox` | theme_commands.gd | name, node_path | bg_color, border_color, border_width, corner_radius, padding | `set_theme_stylebox` | `ui.set_stylebox` | OK |
-| 147 | `set_tree_parameter` | animation_tree_commands.gd | node_path, parameter | value | `set_tree_parameter` | `animation.set_param` | OK |
-| 148 | `setup_camera_3d` | scene_3d_commands.gd | - | cull_mask, current, environment_path, far, fov, look_at, name, near, node_path, parent_path, projection, rotation, size | `setup_camera_3d` | `scene_3d.setup_camera` | OK |
-| 149 | `setup_collision` | physics_commands.gd | node_path, shape | ax, ay, bx, by, depth, dimension, disabled, height, one_way_collision, points, radius, width | `setup_collision` | `physics.setup_collision` | OK |
-| 150 | `setup_control` | theme_commands.gd | node_path | anchor_preset, grow_h, grow_v, margins, min_size, separation, size_flags_h, size_flags_v | `setup_control` | `ui.setup_control` | OK |
-| 151 | `setup_environment` | scene_3d_commands.gd | - | ambient_light_color, ambient_light_energy, ambient_light_source, background_mode, fog_density, fog_enabled, fog_light_color, fog_light_energy, glow_bloom, glow_enabled, glow_intensity, glow_strength, name, node_path, parent_path, sdfgi_enabled, sky, sky_curve, ssao_enabled, ssao_intensity, ssao_radius, ssr_enabled, ssr_fade_in, ssr_fade_out, ssr_max_steps, sun_angle_max, tonemap_exposure, tonemap_mode, tonemap_white | `setup_environment` | `scene_3d.setup_environment` | OK |
-| 152 | `setup_lighting` | scene_3d_commands.gd | - | attenuation, energy, light_type, name, parent_path, preset, range, rotation, shadows, spot_angle, spot_angle_attenuation | `setup_lighting` | `scene_3d.setup_lighting` | OK |
-| 153 | `setup_navigation_agent` | navigation_commands.gd | node_path | avoidance_enabled, max_neighbors, max_speed, mode, name, navigation_layers, neighbor_distance, path_desired_distance, radius, target_desired_distance | `setup_navigation_agent` | `navigation.setup_agent` | OK |
-| 154 | `setup_navigation_region` | navigation_commands.gd | node_path | agent_height, agent_max_climb, agent_max_slope, agent_radius, cell_height, cell_size, mode, name, navigation_layers, source_geometry_mode | `setup_navigation_region` | `navigation.setup_region` | OK |
-| 155 | `setup_physics_body` | physics_commands.gd | node_path | angular_damp, contact_monitor, continuous_cd, floor_max_angle, floor_snap_length, floor_stop_on_slope, freeze, freeze_mode, gravity_scale, linear_damp, mass, max_contacts_reported, max_slides, motion_mode, physics_material_override, slide_on_ceiling, wall_min_slide_angle | `setup_physics_body` | `physics.setup_body` | OK |
-| 156 | `simulate_action` | input_commands.gd | action | pressed, strength | `simulate_action` | `input.simulate` | OK |
-| 157 | `simulate_key` | input_commands.gd | keycode | alt, ctrl, pressed, shift | `simulate_key` | `input.key` | OK |
-| 158 | `simulate_mouse_click` | input_commands.gd | - | auto_release, button, double_click, pressed, x, y | `simulate_mouse_click` | `input.mouse_click` | OK |
-| 159 | `simulate_mouse_move` | input_commands.gd | - | button_mask, relative_x, relative_y, unhandled, x, y | `simulate_mouse_move` | `input.mouse_move` | OK |
-| 160 | `simulate_sequence` | input_commands.gd | - | events, frame_delay | `simulate_sequence` | `input.sequence` | OK |
-| 161 | `start_recording` | runtime_commands.gd | - | - | `start_recording` | `runtime.start_recording` | OK |
-| 162 | `stop_recording` | runtime_commands.gd | - | - | `stop_recording` | `runtime.stop_recording` | OK |
-| 163 | `stop_scene` | scene_commands.gd | - | - | `stop_scene` | `scene.stop` | OK |
-| 164 | `tilemap_clear` | tilemap_commands.gd | node_path | layer | `tilemap_clear` | `tilemap.clear` | OK |
-| 165 | `tilemap_fill_rect` | tilemap_commands.gd | node_path | alternative, atlas_x, atlas_y, layer, source_id, x1, x2, y1, y2 | `tilemap_fill_rect` | `tilemap.fill_rect` | OK |
-| 166 | `tilemap_get_cell` | tilemap_commands.gd | node_path | layer, x, y | `tilemap_get_cell` | `tilemap.get_cell` | OK |
-| 167 | `tilemap_get_info` | tilemap_commands.gd | node_path | - | `tilemap_get_info` | `tilemap.info` | OK |
-| 168 | `tilemap_get_used_cells` | tilemap_commands.gd | node_path | layer, max_count | `tilemap_get_used_cells` | `tilemap.used_cells` | OK |
-| 169 | `tilemap_set_cell` | tilemap_commands.gd | node_path | alternative, atlas_x, atlas_y, layer, source_id, x, y | `tilemap_set_cell` | `tilemap.set_cell` | OK |
-| 170 | `uid_to_project_path` | project_commands.gd | uid | - | `uid_to_project_path` | `project.uid_to_path` | OK |
-| 171 | `update_property` | node_commands.gd | node_path, property | value | `update_property` | `node.update_property` | OK |
-| 172 | `validate_script` | script_commands.gd | path | - | `validate_script` | `script.validate` | OK |
-| 173 | `wait_for_node` | runtime_commands.gd | node_path | poll_frames, timeout | `wait_for_node` | `runtime.wait_for_node` | OK |
-| 174 | `watch_signals` | runtime_commands.gd | - | duration_ms, node_paths, signal_filter | `watch_signals` | `runtime.watch_signals` | OK |
+| 78 | `get_godot_executable` | headless_commands.gd | - | - | `get_godot_executable` | `headless.executable` | OK |
+| 79 | `get_input_actions` | input_map_commands.gd | - | filter, include_builtin | `get_input_actions` | `input.get_actions` | OK |
+| 80 | `get_navigation_info` | navigation_commands.gd | node_path | - | `get_navigation_info` | `navigation.info` | OK |
+| 81 | `get_node_groups` | node_commands.gd | node_path | - | `get_node_groups` | `node.get_groups` | OK |
+| 82 | `get_node_properties` | node_commands.gd | node_path | category | `get_node_properties` | `node.get_properties` | OK |
+| 83 | `get_open_scripts` | script_commands.gd | - | - | `get_open_scripts` | `script.open_scripts` | OK |
+| 84 | `get_output_log` | editor_commands.gd | - | filter, max_lines | `get_output_log` | `editor.output_log` | OK |
+| 85 | `get_particle_info` | particle_commands.gd | node_path | - | `get_particle_info` | `particles.info` | OK |
+| 86 | `get_performance_monitors` | profiling_commands.gd | - | category | `get_performance_monitors` | `diagnostics.performance` | OK |
+| 87 | `get_physics_layers` | physics_commands.gd | node_path | - | `get_physics_layers` | `physics.get_layers` | OK |
+| 88 | `get_project_info` | project_commands.gd | - | - | `get_project_info` | `project.info` | OK |
+| 89 | `get_project_settings` | project_commands.gd | - | key, section | `get_project_settings` | `project.get_settings` | OK |
+| 90 | `get_project_statistics` | analysis_commands.gd | - | include_addons, path | `get_project_statistics` | `diagnostics.statistics` | OK |
+| 91 | `get_resource_preview` | resource_commands.gd | path | max_size | `get_resource_preview` | `resource.preview` | OK |
+| 92 | `get_scene_dependencies` | batch_commands.gd | path | - | `get_scene_dependencies` | `batch.dependencies` | OK |
+| 93 | `get_scene_exports` | scene_commands.gd | path | - | `get_scene_exports` | `scene.exports` | OK |
+| 94 | `get_scene_file_content` | scene_commands.gd | path | - | `get_scene_file_content` | `scene.file_content` | OK |
+| 95 | `get_scene_tree` | scene_commands.gd | - | max_depth | `get_scene_tree` | `scene.tree` | OK |
+| 96 | `get_shader_params` | shader_commands.gd | node_path | - | `get_shader_params` | `shader.get_params` | OK |
+| 97 | `get_signals` | editor_commands.gd | node_path | - | `get_signals` | `editor.get_signals` | OK |
+| 98 | `get_test_report` | test_commands.gd | - | clear | `get_test_report` | `test.report` | OK |
+| 99 | `get_theme_info` | theme_commands.gd | node_path | - | `get_theme_info` | `ui.theme_info` | OK |
+| 100 | `list_android_devices` | android_commands.gd | - | - | `list_android_devices` | `export.list_android` | OK |
+| 101 | `list_animations` | animation_commands.gd | node_path | - | `list_animations` | `animation.list` | OK |
+| 102 | `list_export_presets` | export_commands.gd | - | - | `list_export_presets` | `export.list_presets` | OK |
+| 103 | `list_scripts` | script_commands.gd | - | path, recursive | `list_scripts` | `script.list` | OK |
+| 104 | `monitor_properties` | runtime_commands.gd | node_path | frame_count, frame_interval, properties | `monitor_properties` | `runtime.monitor` | OK |
+| 105 | `move_node` | node_commands.gd | new_parent_path, node_path | - | `move_node` | `node.move` | OK |
+| 106 | `move_to` | runtime_commands.gd | - | arrival_radius, camera_path, look_at_target, player_path, run, target, timeout | `move_to` | `runtime.move_to` | OK |
+| 107 | `navigate_to` | runtime_commands.gd | - | camera_path, move_speed, player_path, target | `navigate_to` | `runtime.navigate_to` | OK |
+| 108 | `open_scene` | scene_commands.gd | path | - | `open_scene` | `scene.open` | OK |
+| 109 | `play_scene` | scene_commands.gd | - | mode | `play_scene` | `scene.play` | OK |
+| 110 | `project_path_to_uid` | project_commands.gd | path | - | `project_path_to_uid` | `project.path_to_uid` | OK |
+| 111 | `read_resource` | resource_commands.gd | path | force | `read_resource` | `resource.read` | OK |
+| 112 | `read_script` | script_commands.gd | path | - | `read_script` | `script.read` | OK |
+| 113 | `read_shader` | shader_commands.gd | path | - | `read_shader` | `shader.read` | OK |
+| 114 | `reload_plugin` | editor_commands.gd | - | - | `reload_plugin` | `editor.reload_plugin` | OK |
+| 115 | `reload_project` | editor_commands.gd | - | - | `reload_project` | `editor.reload_project` | OK |
+| 116 | `remove_animation` | animation_commands.gd | name, node_path | - | `remove_animation` | `animation.remove` | OK |
+| 117 | `remove_autoload` | project_commands.gd | name | - | `remove_autoload` | `resource.remove_autoload` | OK |
+| 118 | `remove_state_machine_state` | animation_tree_commands.gd | node_path, state_name | state_machine_path | `remove_state_machine_state` | `animation.remove_state` | OK |
+| 119 | `remove_state_machine_transition` | animation_tree_commands.gd | from_state, node_path, to_state | state_machine_path | `remove_state_machine_transition` | `animation.remove_transition` | OK |
+| 120 | `rename_node` | node_commands.gd | new_name, node_path | - | `rename_node` | `node.rename` | OK |
+| 121 | `replay_recording` | runtime_commands.gd | events | speed | `replay_recording` | `runtime.replay` | OK |
+| 122 | `run_headless_scene` | headless_commands.gd | scene_path | args, quit_after_frames, timeout_sec | `run_headless_scene` | `headless.run_scene` | OK |
+| 123 | `run_headless_script` | headless_commands.gd | script_path | args, quit_after_frames, timeout_sec | `run_headless_script` | `headless.run_script` | OK |
+| 124 | `run_stress_test` | test_commands.gd | - | actions, duration | `run_stress_test` | `test.stress_test` | OK |
+| 125 | `run_test_scenario` | test_commands.gd | - | scene_path, steps | `run_test_scenario` | `test.run_scenario` | OK |
+| 126 | `save_scene` | scene_commands.gd | - | path | `save_scene` | `scene.save` | OK |
+| 127 | `search_files` | project_commands.gd | query | file_type, max_results, path | `search_files` | `project.search` | OK |
+| 128 | `search_in_files` | project_commands.gd | query | file_type, include_addons, max_results, path, regex | `search_in_files` | `project.search_content` | OK |
+| 129 | `select_nodes` | node_commands.gd | node_path | focus, for_property, inspect, inspector_only, mode, node_paths | `select_nodes` | `node.select` | OK |
+| 130 | `set_anchor_preset` | node_commands.gd | node_path, preset | keep_offsets | `set_anchor_preset` | `node.set_anchor` | OK |
+| 131 | `set_animation_keyframe` | animation_commands.gd | animation, node_path | easing, time, track_index, value | `set_animation_keyframe` | `animation.set_keyframe` | OK |
+| 132 | `set_audio_bus` | audio_commands.gd | name | bypass_effects, mute, rename, send, solo, volume_db | `set_audio_bus` | `audio.set_bus` | OK |
+| 133 | `set_auto_dismiss` | editor_commands.gd | - | enabled | `set_auto_dismiss` | `editor.auto_dismiss` | OK |
+| 134 | `set_blend_tree_node` | animation_tree_commands.gd | blend_tree_state, bt_node_name, bt_node_type, node_path | animation, connect_port, connect_to, position_x, position_y, state_machine_path | `set_blend_tree_node` | `animation.set_blend_node` | OK |
+| 135 | `set_editor_camera` | editor_commands.gd | - | fov, look_at, position, rotation_degrees | `set_editor_camera` | `editor.set_camera` | OK |
+| 136 | `set_game_node_property` | runtime_commands.gd | node_path, property | value | `set_game_node_property` | `runtime.set_property` | OK |
+| 137 | `set_input_action` | input_map_commands.gd | action | deadzone, events | `set_input_action` | `input.define` | OK |
+| 138 | `set_material_3d` | scene_3d_commands.gd | node_path | albedo_texture, cull_mode, emission, emission_color, emission_energy, emission_texture, metallic, metallic_texture, normal_texture, roughness, roughness_texture, surface_index, transparency | `set_material_3d` | `scene_3d.set_material` | OK |
+| 139 | `set_navigation_layers` | navigation_commands.gd | node_path | layer_bits, layer_names, layers | `set_navigation_layers` | `navigation.set_layers` | OK |
+| 140 | `set_node_groups` | node_commands.gd | node_path | groups | `set_node_groups` | `node.set_groups` | OK |
+| 141 | `set_particle_color_gradient` | particle_commands.gd | node_path | stops | `set_particle_color_gradient` | `particles.set_gradient` | OK |
+| 142 | `set_particle_material` | particle_commands.gd | node_path | angular_velocity_max, angular_velocity_min, attractor_interaction_enabled, color, damping_max, damping_min, direction, emission_box_extents, emission_ring_height, emission_ring_inner_radius, emission_ring_radius, emission_shape, emission_sphere_radius, gravity, initial_velocity_max, initial_velocity_min, orbit_velocity_max, orbit_velocity_min, scale_max, scale_min, spread | `set_particle_material` | `particles.set_material` | OK |
+| 143 | `set_physics_layers` | physics_commands.gd | node_path | collision_layer, collision_mask | `set_physics_layers` | `physics.set_layers` | OK |
+| 144 | `set_project_setting` | project_commands.gd | key | type, value | `set_project_setting` | `project.set_setting` | OK |
+| 145 | `set_shader_param` | shader_commands.gd | node_path, param | value | `set_shader_param` | `shader.set_param` | OK |
+| 146 | `set_theme_color` | theme_commands.gd | color, name, node_path | theme_type | `set_theme_color` | `ui.set_color` | OK |
+| 147 | `set_theme_constant` | theme_commands.gd | name, node_path | value | `set_theme_constant` | `ui.set_constant` | OK |
+| 148 | `set_theme_font_size` | theme_commands.gd | name, node_path | size | `set_theme_font_size` | `ui.set_font_size` | OK |
+| 149 | `set_theme_stylebox` | theme_commands.gd | name, node_path | bg_color, border_color, border_width, corner_radius, padding | `set_theme_stylebox` | `ui.set_stylebox` | OK |
+| 150 | `set_tree_parameter` | animation_tree_commands.gd | node_path, parameter | value | `set_tree_parameter` | `animation.set_param` | OK |
+| 151 | `setup_camera_3d` | scene_3d_commands.gd | - | cull_mask, current, environment_path, far, fov, look_at, name, near, node_path, parent_path, projection, rotation, size | `setup_camera_3d` | `scene_3d.setup_camera` | OK |
+| 152 | `setup_collision` | physics_commands.gd | node_path, shape | ax, ay, bx, by, depth, dimension, disabled, height, one_way_collision, points, radius, width | `setup_collision` | `physics.setup_collision` | OK |
+| 153 | `setup_control` | theme_commands.gd | node_path | anchor_preset, grow_h, grow_v, margins, min_size, separation, size_flags_h, size_flags_v | `setup_control` | `ui.setup_control` | OK |
+| 154 | `setup_environment` | scene_3d_commands.gd | - | ambient_light_color, ambient_light_energy, ambient_light_source, background_mode, fog_density, fog_enabled, fog_light_color, fog_light_energy, glow_bloom, glow_enabled, glow_intensity, glow_strength, name, node_path, parent_path, sdfgi_enabled, sky, sky_curve, ssao_enabled, ssao_intensity, ssao_radius, ssr_enabled, ssr_fade_in, ssr_fade_out, ssr_max_steps, sun_angle_max, tonemap_exposure, tonemap_mode, tonemap_white | `setup_environment` | `scene_3d.setup_environment` | OK |
+| 155 | `setup_lighting` | scene_3d_commands.gd | - | attenuation, energy, light_type, name, parent_path, preset, range, rotation, shadows, spot_angle, spot_angle_attenuation | `setup_lighting` | `scene_3d.setup_lighting` | OK |
+| 156 | `setup_navigation_agent` | navigation_commands.gd | node_path | avoidance_enabled, max_neighbors, max_speed, mode, name, navigation_layers, neighbor_distance, path_desired_distance, radius, target_desired_distance | `setup_navigation_agent` | `navigation.setup_agent` | OK |
+| 157 | `setup_navigation_region` | navigation_commands.gd | node_path | agent_height, agent_max_climb, agent_max_slope, agent_radius, cell_height, cell_size, mode, name, navigation_layers, source_geometry_mode | `setup_navigation_region` | `navigation.setup_region` | OK |
+| 158 | `setup_physics_body` | physics_commands.gd | node_path | angular_damp, contact_monitor, continuous_cd, floor_max_angle, floor_snap_length, floor_stop_on_slope, freeze, freeze_mode, gravity_scale, linear_damp, mass, max_contacts_reported, max_slides, motion_mode, physics_material_override, slide_on_ceiling, wall_min_slide_angle | `setup_physics_body` | `physics.setup_body` | OK |
+| 159 | `simulate_action` | input_commands.gd | action | pressed, strength | `simulate_action` | `input.simulate` | OK |
+| 160 | `simulate_key` | input_commands.gd | keycode | alt, ctrl, pressed, shift | `simulate_key` | `input.key` | OK |
+| 161 | `simulate_mouse_click` | input_commands.gd | - | auto_release, button, double_click, pressed, x, y | `simulate_mouse_click` | `input.mouse_click` | OK |
+| 162 | `simulate_mouse_move` | input_commands.gd | - | button_mask, relative_x, relative_y, unhandled, x, y | `simulate_mouse_move` | `input.mouse_move` | OK |
+| 163 | `simulate_sequence` | input_commands.gd | - | events, frame_delay | `simulate_sequence` | `input.sequence` | OK |
+| 164 | `start_recording` | runtime_commands.gd | - | - | `start_recording` | `runtime.start_recording` | OK |
+| 165 | `stop_recording` | runtime_commands.gd | - | - | `stop_recording` | `runtime.stop_recording` | OK |
+| 166 | `stop_scene` | scene_commands.gd | - | - | `stop_scene` | `scene.stop` | OK |
+| 167 | `tilemap_clear` | tilemap_commands.gd | node_path | layer | `tilemap_clear` | `tilemap.clear` | OK |
+| 168 | `tilemap_fill_rect` | tilemap_commands.gd | node_path | alternative, atlas_x, atlas_y, layer, source_id, x1, x2, y1, y2 | `tilemap_fill_rect` | `tilemap.fill_rect` | OK |
+| 169 | `tilemap_get_cell` | tilemap_commands.gd | node_path | layer, x, y | `tilemap_get_cell` | `tilemap.get_cell` | OK |
+| 170 | `tilemap_get_info` | tilemap_commands.gd | node_path | - | `tilemap_get_info` | `tilemap.info` | OK |
+| 171 | `tilemap_get_used_cells` | tilemap_commands.gd | node_path | layer, max_count | `tilemap_get_used_cells` | `tilemap.used_cells` | OK |
+| 172 | `tilemap_set_cell` | tilemap_commands.gd | node_path | alternative, atlas_x, atlas_y, layer, source_id, x, y | `tilemap_set_cell` | `tilemap.set_cell` | OK |
+| 173 | `uid_to_project_path` | project_commands.gd | uid | - | `uid_to_project_path` | `project.uid_to_path` | OK |
+| 174 | `update_property` | node_commands.gd | node_path, property | value | `update_property` | `node.update_property` | OK |
+| 175 | `validate_script` | script_commands.gd | path | - | `validate_script` | `script.validate` | OK |
+| 176 | `wait_for_node` | runtime_commands.gd | node_path | poll_frames, timeout | `wait_for_node` | `runtime.wait_for_node` | OK |
+| 177 | `watch_signals` | runtime_commands.gd | - | duration_ms, node_paths, signal_filter | `watch_signals` | `runtime.watch_signals` | OK |
 

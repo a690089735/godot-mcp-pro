@@ -2,6 +2,27 @@
 
 ## 已完成 ✅
 
+### v1.16.0 上游合并 + Python 适配（第十三阶段，2026-08-11）
+- [x] 合并 upstream `4d5f491`（v1.16.0：headless 执行 + 可选连接 token + SECURITY.md），**零冲突**
+- [x] `CHANGELOG.md` / `SECURITY.md` / `addons/` 以**上游为准**，本 fork 不修改
+- [x] 新增 `server/src/godot_mcp_pro/tools/headless.py`：
+  - `run_headless_scene` / `run_headless_script` / `get_godot_executable`
+  - 参数 key 与 GDScript 对齐：`scene_path`/`script_path`、`timeout_sec`（默认 120，上限 900）、
+    `quit_after_frames`（默认 -1 不发送）、`args`（⚠️ 注意是 `args` 不是 `extra_args`）
+  - Python 侧超时 = `timeout_sec + 30`，封顶 960s（防 Python 侧误杀长任务）
+- [x] `server.py`：注册 headless 模块；完整模式 **175→178**、紧凑模式 **22→23**；instructions 文案更新
+- [x] `tools/project.py`：`search_in_files` 加 `include_addons:bool=false`；`set_project_setting` 加 `type:str=""`
+- [x] `tools/scene.py`：`create_scene` 加 `force:bool=false`（GDScript 端新增文件已存在保护）
+- [x] `tools/resource.py`：`read_resource` 加 `force:bool=false`（GDScript 端新增文本资源守卫）
+- [x] `tools/compact.py`：新增 `headless` 域（3 actions）+ project/scene 域 action 文档同步
+- [x] `bridge.py`：处理 `auth_required` 消息 + `_read_auth_token()`（支持 `GODOT_MCP_TOKEN` /
+      `GODOT_MCP_TOKEN_FILE` 环境变量）；opt-in 功能，默认零影响
+- [x] `server/README.md`：工具数全面更新（175→178、22→23、174→177）+ token 环境变量
+- [x] 测试全过：`test_tool_sync.py` 5/5（GDScript 177 + 1 Python-only = 178）、
+      `test_param_sync.py` 3/3（DEAD=0 / MISSING=0）
+- [ ] 待实机验证：3 个 headless 新工具（需 Godot + 测试项目跑真实场景/脚本）
+- [ ] 待实机验证：token 认证流程（可选功能，需开启 `godot_mcp_pro/require_connection_token`）
+
 ### 全量实机逐一测试（第十二阶段）
 - [x] 新增 `server/tools_audit.py`，生成 GDScript/Python/紧凑模式**三方对照表**
 - [x] `memory-bank/tool-audit.md`（174 行自动生成对照表）
@@ -129,7 +150,7 @@
 
 ### 后续可选
 - [ ] 实现 HTTP transport（`--http` 模式）
-- [ ] 更新 `server/README.md`（仍写 172 工具、未提及 `--compact`）
+- [x] ~~更新 `server/README.md`（仍写 172 工具、未提及 `--compact`）~~ → **已于 v1.16.0 适配时完成**（178 工具 / 23 伞工具 / 177 命令 / token 环境变量）
 
 ## 已知问题 / 风险 ⚠️
 
@@ -177,3 +198,4 @@
 | 参数对齐 5 | `c07aa04` — 清理 7 处无效参数（DEAD/MISSING 双清零） |
 | 测试固化 | `058feb6` — 审计固化为 server/tests/（8 项） |
 | 文档同步 | `843a2ab` — compact.py 21 个伞形工具 action 文档 |
+| 上游合并 | v1.16.0 合并（headless + token + SECURITY.md）— Python 适配：headless.py、project/scene/resource 新参数、compact 23 伞工具、bridge token |

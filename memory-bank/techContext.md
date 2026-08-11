@@ -42,6 +42,8 @@ godot-mcp-pro
 |------|--------|------|
 | `GODOT_MCP_PORT` | 6505 | WebSocket 首选起始端口。始终启用端口重试（6505-6514），多实例可共存。|
 | `GODOT_MCP_LOG_LEVEL` | INFO | 日志级别（DEBUG/INFO/WARNING/ERROR）|
+| `GODOT_MCP_TOKEN` | *(空)* | 连接 token（Godot 启用 `require_connection_token` 时需要，见 SECURITY.md）|
+| `GODOT_MCP_TOKEN_FILE` | *(空)* | 指向包含 token 的文件的路径（替代 `GODOT_MCP_TOKEN` 内联）|
 
 ### Cline MCP 配置
 配置文件位于：`<APPDATA>/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
@@ -94,17 +96,17 @@ dependencies = [
 ```
 godot-mcp-pro/
 ├── addons/godot_mcp/          # Godot 编辑器插件（从上游同步）
-│   ├── commands/              # 26 个命令模块
+│   ├── commands/              # 27 个命令模块（v1.16.0 新增 headless_commands.gd）
 │   ├── ui/                    # 编辑器底部面板
 │   ├── utils/                 # 工具函数
 │   ├── plugin.gd             # 插件入口
-│   ├── websocket_server.gd   # WS 客户端 + 心跳
+│   ├── websocket_server.gd   # WS 客户端 + 心跳 + token 认证
 │   └── plugin.cfg            # 插件元数据
 ├── server/                    # Python MCP Server（本 fork 独有）
 │   ├── src/godot_mcp_pro/
 │   │   ├── server.py         # FastMCP 入口、工具注册
-│   │   ├── bridge.py         # WebSocket 桥接、心跳、端口重试
-│   │   └── tools/            # 22 个工具模块
+│   │   ├── bridge.py         # WebSocket 桥接、心跳、端口重试、token 认证
+│   │   └── tools/            # 23 个工具模块（v1.16.0 新增 headless.py）
 │   ├── pyproject.toml        # 构建配置
 │   └── README.md             # Server 说明
 ├── docs/                      # 多语言 README

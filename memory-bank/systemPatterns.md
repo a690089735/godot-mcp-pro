@@ -30,18 +30,24 @@ Godot 引擎
 
 ### 1. 工具注册模式
 - `server.py` 启动时调用 `_register_all_tools()`
-- **完整模式**（默认）：22 个工具模块（`tools/*.py`）各自定义 `register(mcp, bridge)` → 共 175 个工具
-- **紧凑模式**（`--compact`）：单一 `tools/compact.py` 注册 22 个伞工具（21 领域 + 1 batch_execute）
+- **完整模式**（默认）：23 个工具模块（`tools/*.py`）各自定义 `register(mcp, bridge)` → 共 178 个工具
+  （177 GDScript 命令 + 1 纯 Python `batch_execute`）
+- **紧凑模式**（`--compact`）：单一 `tools/compact.py` 注册 23 个伞工具（22 领域 + 1 batch_execute）
 - 完整模式中每个工具函数内部调用 `bridge.call_godot("命令名", {...})`
 - 紧凑模式中每个伞工具接受 `action:str` + `params:dict`，通过 ACTION_MAP 分发到同一个 `bridge.call_godot()`
 - ⚠️ 紧凑模式下 AI **只能靠 docstring 发现参数**（schema 里只有 `action`/`params`），
   所以完整模式的签名一改，`compact.py` 的 action 说明必须同步
+- ⚠️ headless 工具（v1.16.0）：GDScript 读的参数 key 是 `args`（不是 `extra_args`）；
+  Python 侧超时 = `timeout_sec + 30`，封顶 960s
 
 ### 2. 命令分发模式（GDScript 端）
 - `command_router.gd` 维护命令分发表
-- 25 个命令模块（`commands/*_commands.gd`）继承 `base_command.gd`（共注册 174 个命令）
+- 27 个命令模块（`commands/*_commands.gd`）继承 `base_command.gd`（共注册 177 个命令；
+  v1.16.0 新增 `headless_commands.gd` 的 3 个命令）
 - `base_command.gd` 提供 UndoRedo、安全守卫（v1.14.0+）等公共方法
 - 路由：method 名 → 对应的 command 类 → 执行并返回结果
+- v1.16.0：handler 返回非 Dictionary 时返回错误而非挂起调用方；`optional_int`/`optional_float`
+  防 raise（~160 处转换全部收紧）——**纯 GDScript 端加固，Python 无感**
 
 ### 3. 心跳保活模式
 - **Python → Godot**：每 10s 发送 JSON-RPC `{"method": "ping"}`
@@ -60,6 +66,18 @@ Godot 引擎
 - `guard_text_resource_write(path, force)`：阻止写入已打开的脚本/着色器
 - `execute_editor_script` 扫描危险 API 调用
 - 错误码 `-32009`：资源冲突
+- v1.16.0 新增：`guard_expected_extension(path, allowed, what)` 拒绝扩展名不匹配的写入；
+  `paths_match()` 大小写不敏感比较（Windows/macOS 保护）；`create_scene`/`delete_scene`/
+  `read_resource` 新增/收紧守卫
+
+### 5b. 连接 token 认证模式（v1.16.0，opt-in）
+- **Godot 端**：`godot_mcp_pro/require_connection_token` 项目设置（或 `GODOT_MCP_REQUIRE_TOKEN=1`）
+  → token 写入 `user://mcp_auth_token`；连接建立后**立即发** `{"method":"auth_required"}`
+- **Python 端**（`bridge.py`）：收到 `auth_required` → 读 `GODOT_MCP_TOKEN` 或 `GODOT_MCP_TOKEN_FILE`
+  → 回 `{"method":"auth","params":{"token":...}}`；5s 内未认证 Godot 断开（关闭码 4001）
+- **默认关闭**：不开启时 `_authed` 立即为 true，整个机制零成本
+- 时序保证：Godot 在连接事件后立刻发 `auth_required`，Python 的
+  `async for message in websocket` 循环能立即收到，无竞态
 
 ### 6. 参数传递模式（关键，易腐化）
 
@@ -137,6 +155,7 @@ Python 端保留友好别名（`"directional"`/`"box"`）并在发送前用映�
 | tilemap.py | tilemap_commands.gd |
 | analysis.py | analysis_commands.gd |
 | android.py | android_commands.gd |
+| headless.py | headless_commands.gd（v1.16.0 新增） |
 
 ### 辅助模块（GDScript）
 - `websocket_server.gd`：WS 客户端管理、心跳、重连
